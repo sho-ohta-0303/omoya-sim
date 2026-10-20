@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>TEST</title>
+</head>
+<body>Hello</body>
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>おもや 雇用条件シミュレーション</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* ── Password Gate ── */
+#gate {
+  position: fixed; inset: 0;
+  background: #18160F;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999;
+  font-family: 'Inter', 'Noto Sans JP', sans-serif;
+}
+.gate-box {
+  background: #231F14;
+  border: 1.5px solid #3A3629;
+  border-radius: 20px;
+  padding: 40px 36px;
+  width: min(380px, 90vw);
+  text-align: center;
+}
+.gate-logo {
+  font-size: 28px;
+  font-weight: 700;
+  color: #D4A040;
+  font-family: 'Noto Sans JP', sans-serif;
+  margin-bottom: 6px;
+  letter-spacing: 0.06em;
+}
+.gate-sub {
+  font-size: 13px;
+  color: #6B6459;
+  margin-bottom: 28px;
+}
+.gate-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #A89F94;
+  margin-bottom: 8px;
+  text-align: left;
+}
+.gate-input {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1.5px solid #3A3629;
+  background: #18160F;
+  color: #F0EDE8;
+  font-size: 15px;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  margin-bottom: 12px;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+.gate-input:focus { border-color: #D4A040; }
+.gate-btn {
+  width: 100%;
+  padding: 13px;
+  border-radius: 10px;
+  border: none;
+  background: #D4A040;
+  color: #18160F;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'Inter', 'Noto Sans JP', sans-serif;
+  cursor: pointer;
+  transition: background 0.18s;
+  letter-spacing: 0.04em;
+}
+.gate-btn:hover { background: #E8B850; }
+.gate-err {
+  font-size: 12px;
+  color: #D46882;
+  margin-top: 10px;
+  min-height: 18px;
+}
+#main { display: none; }
+</style>
+
+<style>
+:root {
+  --bg: #F7F6F3; --bg-card: #FFFFFF; --bg-muted: #EEECEA;
+  --fg: #1C1A18; --fg-sub: #6B665F; --fg-dim: #9B9590; --border: #E0DDD8;
+  --matsu: #B8832A; --matsu-bg: #FDF6EA; --matsu-border: #E8C87A;
+  --take: #3A7A62; --take-bg: #EDF5F1; --take-border: #8ECBB4;
+  --ume: #B84D68; --ume-bg: #FCF0F3; --ume-border: #E8A0B2;
+  --accent: #1E3A5F; --shadow: 0 2px 12px rgba(0,0,0,0.07); --shadow-lg: 0 6px 24px rgba(0,0,0,0.12);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #18160F; --bg-card: #231F14; --bg-muted: #2A2619;
+    --fg: #F0EDE8; --fg-sub: #A89F94; --fg-dim: #6B6459; --border: #3A3629;
+    --matsu: #D4A040; --matsu-bg: #2A2210; --matsu-border: #5A4820;
+    --take: #52A882; --take-bg: #102218; --take-border: #2A5840;
+    --ume: #D46882; --ume-bg: #22101A; --ume-border: #5A2838;
+    --accent: #7AABDC; --shadow: 0 2px 12px rgba(0,0,0,0.3); --shadow-lg: 0 6px 24px rgba(0,0,0,0.4);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #18160F; --bg-card: #231F14; --bg-muted: #2A2619;
+  --fg: #F0EDE8; --fg-sub: #A89F94; --fg-dim: #6B6459; --border: #3A3629;
+  --matsu: #D4A040; --matsu-bg: #2A2210; --matsu-border: #5A4820;
+  --take: #52A882; --take-bg: #102218; --take-border: #2A5840;
+  --ume: #D46882; --ume-bg: #22101A; --ume-border: #5A2838;
+  --accent: #7AABDC; --shadow: 0 2px 12px rgba(0,0,0,0.3); --shadow-lg: 0 6px 24px rgba(0,0,0,0.4);
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--fg); font-family: 'Inter', 'Noto Sans JP', sans-serif; font-size: 14px; line-height: 1.6; padding: 32px max(16px, env(safe-area-inset-left, 0px)); }
+.header { text-align: center; margin-bottom: 32px; }
+.header-label { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-dim); margin-bottom: 8px; }
+.header h1 { font-family: 'Noto Sans JP', sans-serif; font-size: clamp(20px, 4vw, 28px); font-weight: 700; color: var(--fg); margin-bottom: 6px; }
+.header p { color: var(--fg-sub); font-size: 13px; }
+.level-selector { display: flex; gap: 8px; justify-content: center; margin-bottom: 28px; flex-wrap: wrap; }
+.level-btn { padding: 8px 20px; border-radius: 100px; border: 1.5px solid var(--border); background: var(--bg-card); color: var(--fg-sub); font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.18s; }
+.level-btn:hover { border-color: var(--accent); color: var(--accent); }
+.level-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-width: 960px; margin: 0 auto 32px; }
+@media (max-width: 680px) { .grid { grid-template-columns: 1fr; } }
+.card { background: var(--bg-card); border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; border: 1.5px solid var(--border); transition: box-shadow 0.2s; }
+.card:hover { box-shadow: var(--shadow-lg); }
+.card-header { padding: 18px 20px 14px; border-bottom: 1px solid var(--border); }
+.tier-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 10px; border-radius: 100px; margin-bottom: 8px; }
+.card-header h2 { font-family: 'Noto Sans JP', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+.card-header .subtitle { font-size: 12px; color: var(--fg-sub); }
+.matsu .tier-badge { background: var(--matsu-bg); color: var(--matsu); border: 1px solid var(--matsu-border); }
+.matsu .card-header { border-top: 3px solid var(--matsu); padding-top: 15px; }
+.take .tier-badge { background: var(--take-bg); color: var(--take); border: 1px solid var(--take-border); }
+.take .card-header { border-top: 3px solid var(--take); padding-top: 15px; }
+.ume .tier-badge { background: var(--ume-bg); color: var(--ume); border: 1px solid var(--ume-border); }
+.ume .card-header { border-top: 3px solid var(--ume); padding-top: 15px; }
+.conditions { padding: 14px 20px; border-bottom: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cond-label { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; color: var(--fg-dim); text-transform: uppercase; margin-bottom: 2px; }
+.cond-value { font-size: 13px; font-weight: 600; color: var(--fg); }
+.salary { padding: 16px 20px; }
+.salary-gross { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+.salary-gross .label { font-size: 12px; color: var(--fg-sub); }
+.salary-gross .amount { font-family: 'Inter', sans-serif; font-size: 22px; font-weight: 700; color: var(--fg); font-variant-numeric: tabular-nums; }
+.salary-gross .unit { font-size: 12px; color: var(--fg-sub); margin-left: 2px; }
+.bar-wrap { height: 8px; background: var(--bg-muted); border-radius: 100px; overflow: hidden; margin-bottom: 10px; display: flex; }
+.bar-seg { height: 100%; transition: width 0.4s ease; }
+.bar-take { background: #4CAF82; } .bar-social { background: #E09040; } .bar-tax { background: #B06070; } .bar-rtax { background: #8090C0; }
+.breakdown { list-style: none; display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+.breakdown li { display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+.breakdown .bd-label { display: flex; align-items: center; gap: 6px; color: var(--fg-sub); }
+.bd-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.breakdown .bd-amount { font-family: 'Inter', sans-serif; font-variant-numeric: tabular-nums; color: var(--fg-sub); }
+.breakdown .bd-amount.deduct { color: var(--fg-dim); }
+.take-home-box { border-radius: 10px; padding: 12px 14px; }
+.th-row { display: flex; justify-content: space-between; align-items: baseline; }
+.th-label { font-size: 12px; font-weight: 600; }
+.th-amount { font-family: 'Inter', sans-serif; font-size: 19px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.th-unit { font-size: 11px; margin-left: 2px; }
+.th-sub { display: flex; justify-content: space-between; align-items: baseline; margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border); }
+.th-sub .th-label { font-size: 11px; color: var(--fg-dim); font-weight: 400; }
+.th-sub .th-amount { font-size: 14px; font-weight: 600; color: var(--fg-sub); }
+.matsu .take-home-box { background: var(--matsu-bg); } .matsu .th-amount { color: var(--matsu); }
+.take .take-home-box { background: var(--take-bg); } .take .th-amount { color: var(--take); }
+.ume .take-home-box { background: var(--ume-bg); } .ume .th-amount { color: var(--ume); }
+.note-row { max-width: 960px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; }
+.note-row h3 { font-size: 12px; font-weight: 700; color: var(--fg-sub); margin-bottom: 8px; letter-spacing: 0.06em; text-transform: uppercase; }
+.note-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.note-list li { font-size: 12px; color: var(--fg-sub); padding-left: 16px; position: relative; }
+.note-list li::before { content: "※"; position: absolute; left: 0; color: var(--fg-dim); }
+.compare-wrap { max-width: 960px; margin: 0 auto 20px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+.compare-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.compare-table th, .compare-table td { padding: 10px 14px; text-align: center; border-bottom: 1px solid var(--border); }
+.compare-table th { background: var(--bg-muted); font-size: 12px; font-weight: 700; color: var(--fg-sub); }
+.compare-table th:first-child, .compare-table td:first-child { text-align: left; color: var(--fg-sub); font-size: 12px; }
+.compare-table tr:last-child td { border-bottom: none; }
+.matsu-text { color: var(--matsu); font-weight: 700; } .take-text { color: var(--take); font-weight: 700; } .ume-text { color: var(--ume); font-weight: 700; }
+.font-num { font-family: 'Inter', sans-serif; font-variant-numeric: tabular-nums; }
+.check { color: #4CAF82; } .dash { color: var(--fg-dim); }
+</style>
+</head>
+<body>
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-logo">おもや</div>
+    <div class="gate-sub">採用情報・閲覧専用ページ</div>
+    <div class="gate-label">パスワード</div>
+    <input class="gate-input" id="pw-input" type="password" placeholder="パスワードを入力" onkeydown="if(event.key==='Enter')unlock()">
+    <button class="gate-btn" onclick="unlock()">開く</button>
+    <div class="gate-err" id="pw-err"></div>
+  </div>
+</div>
+<div id="main">
+<div class="header">
+  <span class="header-label">株式会社おもや 採用案内</span>
+  <h1>雇用条件・給与シミュレーション</h1>
+  <p>時給レベルを選択して、各雇用形態の給与と手取りを確認できます</p>
+</div>
+<div class="level-selector">
+  <button class="level-btn active" data-level="1" onclick="setLevel(1)">L1 1,300円</button>
+  <button class="level-btn" data-level="2" onclick="setLevel(2)">L2 1,500円</button>
+  <button class="level-btn" data-level="3" onclick="setLevel(3)">L3 1,800円</button>
+  <button class="level-btn" data-level="4" onclick="setLevel(4)">L4 2,200円</button>
+</div>
+<div class="grid">
+  <div class="card matsu">
+    <div class="card-header"><span class="tier-badge">松</span><h2>正社員（フル）</h2><div class="subtitle">週5日・1日8h</div></div>
+    <div class="conditions">
+      <div class="cond-item"><div class="cond-label">月所定時間</div><div class="cond-value">179 h</div></div>
+      <div class="cond-item"><div class="cond-label">週休</div><div class="cond-value">2日</div></div>
+      <div class="cond-item"><div class="cond-label">雇用形態</div><div class="cond-value">正社員（無期）</div></div>
+      <div class="cond-item"><div class="cond-label">社会保険</div><div class="cond-value">✅ 全加入</div></div>
+    </div>
+    <div class="salary" id="matsu-salary"></div>
+  </div>
+  <div class="card take">
+    <div class="card-header"><span class="tier-badge">竹</span><h2>限定正社員（上）</h2><div class="subtitle">週4日・1日8h</div></div>
+    <div class="conditions">
+      <div class="cond-item"><div class="cond-label">月所定時間</div><div class="cond-value">130 h</div></div>
+      <div class="cond-item"><div class="cond-label">週休</div><div class="cond-value">3日</div></div>
+      <div class="cond-item"><div class="cond-label">雇用形態</div><div class="cond-value">限定正社員（無期）</div></div>
+      <div class="cond-item"><div class="cond-label">社会保険</div><div class="cond-value">✅ 全加入</div></div>
+    </div>
+    <div class="salary" id="take-salary"></div>
+  </div>
+  <div class="card ume">
+    <div class="card-header"><span class="tier-badge">梅</span><h2>限定正社員（下）</h2><div class="subtitle">週4日・1日6h</div></div>
+    <div class="conditions">
+      <div class="cond-item"><div class="cond-label">月所定時間</div><div class="cond-value">100 h</div></div>
+      <div class="cond-item"><div class="cond-label">週休</div><div class="cond-value">3日</div></div>
+      <div class="cond-item"><div class="cond-label">雇用形態</div><div class="cond-value">限定正社員（無期）</div></div>
+      <div class="cond-item"><div class="cond-label">社会保険</div><div class="cond-value">✅ 全加入</div></div>
+    </div>
+    <div class="salary" id="ume-salary"></div>
+  </div>
+</div>
+<div class="compare-wrap">
+  <table class="compare-table">
+    <thead><tr><th>比較項目</th><th class="matsu-text">松/正社員フル</th><th class="take-text">竹/限定（上）</th><th class="ume-text">梅/限定（下）</th></tr></thead>
+    <tbody>
+      <tr><td>月所定労働時間</td><td class="font-num matsu-text">179h</td><td class="font-num take-text">130h</td><td class="font-num ume-text">100h</td></tr>
+      <tr><td>週休日数</td><td>2日</td><td>3日</td><td>3日</td></tr>
+      <tr><td>転勤・異動</td><td>あり</td><td class="check">原則なし</td><td class="check">原則なし</td></tr>
+      <tr><td>試用期間</td><td>3ヶ月（90%）</td><td>3ヶ月（90%）</td><td>3ヶ月（90%）</td></tr>
+      <tr><td>有給休暇</td><td class="check">あり</td><td class="check">あり</td><td class="check">あり</td></tr>
+      <tr><td>健康保険・厚生年金</td><td class="check">加入</td><td class="check">加入</td><td class="check">加入</td></tr>
+      <tr><td>育児・産休</td><td class="check">取得可</td><td class="check">取得可</td><td class="check">取得可</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="note-row">
+  <h3>計算の前提・注意事項</h3>
+  <ul class="note-list">
+    <li>社会保険料は協会けんぽ東京支部の2024年度保険料率（健康保険4.99%・厚生年金9.15%・雇用保険0.6%）で計算。</li>
+    <li>所得税は給与所得者の源泉徴収税額表（甲欄）に基づく概算。</li>
+    <li>住民税は前年所得を基に翌年6月から徴収。入社初年度は住民税ゼロ。</li>
+    <li>残業・深夜割増・賞与は含みません。</li>
+    <li>時給は全雇用形態で共通のレベルテーブルを適用。</li>
+  </ul>
+</div>
+</div>
+<script>
+const PW = 'Omoya1-7-9';
+function unlock() {
+  const val = document.getElementById('pw-input').value;
+  if (val === PW) {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('main').style.display = 'block';
+    try { sessionStorage.setItem('omoya_unlocked','1'); } catch(e){}
+    renderAll();
+  } else {
+    const err = document.getElementById('pw-err');
+    err.textContent = 'パスワードが違います';
+    document.getElementById('pw-input').value = '';
+    setTimeout(()=>{err.textContent='';},2500);
+  }
+}
+try { if(sessionStorage.getItem('omoya_unlocked')==='1'){document.getElementById('gate').style.display='none';document.getElementById('main').style.display='block';} } catch(e){}
+const HOURLY={1:1300,2:1500,3:1800,4:2200};
+const HOURS={matsu:179,take:130,ume:100};
+let currentLevel=1;
+function calcSalary(gross){
+  const h=Math.round(gross*0.0499),p=Math.round(gross*0.0915),e=Math.round(gross*0.006),s=h+p+e;
+  const it=Math.round(Math.max(0,gross-s-88000)*0.05105);
+  const ag=gross*12,as2=s*12;
+  let sd;
+  if(ag<=1625000)sd=550000;
+  else if(ag<=1800000)sd=Math.round(ag*0.4)-100000;
+  else if(ag<=3600000)sd=Math.round(ag*0.3)+80000;
+  else sd=Math.round(ag*0.2)+440000;
+  const rt=Math.round(Math.max(0,(ag-as2)-sd-430000)*0.10/12);
+  return{gross,totalSocial:s,incomeTax:it,residentTax:rt,firstYear:gross-s-it,ongoing:gross-s-it-rt};
+}
+function fmt(n){return n.toLocaleString('ja-JP');}
+function pct(n,t){return Math.round(n/t*100);}
+function renderSalary(id,tier,lv){
+  const h=HOURLY[lv],hr=HOURS[tier],g=h*hr,s=calcSalary(g);
+  const pt=pct(s.firstYear,g),ps=pct(s.totalSocial,g),pi=pct(s.incomeTax,g),pr=Math.max(0,100-pt-ps-pi);
+  document.getElementById(id).innerHTML=`
+    <div class="salary-gross"><span class="label">月額給与（総支給）</span><span class="amount">${fmt(g)}<span class="unit">円</span></span></div>
+    <div class="bar-wrap"><div class="bar-seg bar-take" style="width:${pt}%"></div><div class="bar-seg bar-social" style="width:${ps}%"></div><div class="bar-seg bar-tax" style="width:${pi}%"></div><div class="bar-seg bar-rtax" style="width:${pr}%"></div></div>
+    <ul class="breakdown">
+      <li><span class="bd-label"><span class="bd-dot" style="background:#4CAF82"></span>手取り（初年度）</span><span class="bd-amount font-num">${fmt(s.firstYear)} 円</span></li>
+      <li><span class="bd-label"><span class="bd-dot" style="background:#E09040"></span>社会保険料</span><span class="bd-amount deduct font-num">− ${fmt(s.totalSocial)} 円</span></li>
+      <li><span class="bd-label"><span class="bd-dot" style="background:#B06070"></span>所得税</span><span class="bd-amount deduct font-num">− ${fmt(s.incomeTax)} 円</span></li>
+      <li><span class="bd-label"><span class="bd-dot" style="background:#8090C0"></span>住民税（2年目〜）</span><span class="bd-amount deduct font-num">− ${fmt(s.residentTax)} 円</span></li>
+    </ul>
+    <div class="take-home-box">
+      <div class="th-row"><span class="th-label">手取り（初年度）</span><span class="th-amount font-num">${fmt(s.firstYear)}<span class="th-unit">円</span></span></div>
+      <div class="th-sub"><span class="th-label">2年目以降（住民税控除後）</span><span class="th-amount font-num">${fmt(s.ongoing)} 円</span></div>
+    </div>`;
+}
+function setLevel(lv){currentLevel=lv;document.querySelectorAll('.level-btn').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.level)===lv));renderAll();}
+function renderAll(){renderSalary('matsu-salary','matsu',currentLevel);renderSalary('take-salary','take',currentLevel);renderSalary('ume-salary','ume',currentLevel);}
+renderAll();
+</script>
+</body>
+</html>/html>
